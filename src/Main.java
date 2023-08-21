@@ -5,14 +5,30 @@ public class Main {
         Scanner sc = new Scanner(System.in);
 
         while(true){
-            System.out.println("Digite um CPF (Apenas números!) - ou digite 'sair' para sair: ");
-            String cpf = sc.nextLine();
-            if(cpf.equalsIgnoreCase("sair"))
+            System.out.println("Digite um CPF ou RG - ou digite 'sair' para sair: ");
+            String value = sc.nextLine();
+            if(value.equalsIgnoreCase("sair"))
                 break;
-            System.out.println(validaCPF(cpf) ? "CPF Válido" : "CPF Inválido");
+
+            value = value.replace(".", "").replace("-", "");
+
+            switch (value.length()){
+                case 11:
+                    System.out.println(validaCPF(value) ? "CPF Válido" : "CPF Inválido");
+                    break;
+                case 9:
+                    System.out.println(verificaRg(value) ? "RG Válido" : "RG Inválido");
+                    break;
+                default:
+                    System.out.println("Informação inválida!");
+                    break;
+            }
         }
     }
 
+    /**
+     * @author viniolimpio
+     */
     static boolean validaCPF(String cpf){
         if ((cpf.length() != 11) ||
                 cpf.equals("00000000000") || cpf.equals("11111111111") || cpf.equals("22222222222") ||
@@ -48,4 +64,36 @@ public class Main {
             return false;
         }
     }
+
+    /**
+     * @author mayar
+     */
+    // Considerando que os RG's de São Paulo tem 9 dígitos
+    public static boolean verificaRg(String numeroRg) {
+        if (numeroRg == null || numeroRg.length() != 9) {
+            return false;
+        }
+
+        // Calculando o dígito verificador
+        int soma = 0;
+        int multiplicador[] = {2, 3, 4, 5, 6, 7, 8, 9};
+
+        for (int i = 0; i < 8; i++) {
+            int digitoCalculado = Character.getNumericValue(numeroRg.charAt(i));
+            soma += digitoCalculado * multiplicador[i];
+        }
+
+        int resto = soma % 11;
+        int digitoVerificador = (11 - resto);
+
+        if(digitoVerificador == 10){
+            digitoVerificador = 0;
+        }
+
+        // Verificação do último dígito
+        // Pega o último dígito fornecido pelo usuário e faz a comparação com o dígito calculado
+        int digitoUsuario = Character.getNumericValue(numeroRg.charAt(8));
+        return digitoVerificador == digitoUsuario;
+    }
+
 }
